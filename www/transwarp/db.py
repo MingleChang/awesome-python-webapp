@@ -218,5 +218,54 @@ def _select(sql,first,*args):
         if cursor:
             cursor.close()
             
+@with_connection
+def select_one(sql,*args):
+    return _select(sql, True,*args)
 
+@with_connection
+def select_int(sql,*args):
+    d=_select(sql, True,*args)
+    if len(d)!=1:   
+        raise MultiColumnsError('Expect only one column')
+    return d.values()[0]
+
+@with_connection
+def select(sql,*args):
+    return _select(sql, False,*args)
+
+@with_connection
+def _update(sql,*args):
+    global _db_ctx
+    cursor=None
+    sql=sql.replace('?','%s')
+    logging.info('SQL: %s, ARGS: %s' % (sql,args))
+    try:
+        cursor=_db_ctx.connection.curcor()
+        cursor.execute(sql,args)
+        r=cursor.rowcount
+        if _db_ctx.transactions==0:
+            #no transaction enviroment:
+            logging.info('auto commit')
+            _db_ctx.connection.commit()
+        return r
+    finally:
+        if cursor:
+            cursor.close()
+            
+def insert(table,**kw):
+    cols,args=zip(*kw.iteritems())
+    sql = 'insert into `%s` (%s) values (%s)' % (table, ','.join(['`%s`' % col for col in cols]), ','.join(['?' for _ in range(len(cols))]))
+    return _update(sql,*args)
+
+def update(sql,*args):
+    return _update(sql,*args)
+
+if __name__=='__main__':
+    logging.basicConfig(level=logging.DEBUG)
+    create_engine('root', '890805', 'test')
+#     update('drop table if exists user')
+    update('create table if not exists user (id int primary key, name text, email text, passwd text, last_modified real)')
+    import doctest
+    doctest.testmod()
+    
         
