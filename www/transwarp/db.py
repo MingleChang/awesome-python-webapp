@@ -198,3 +198,25 @@ def with_transaction(func):
         _profiling(_start)
     return _wrapper
         
+def _select(sql,first,*args):
+    global _db_ctx
+    cursor = None
+    sql.replace('?','%s')
+    logging.info('SQL: %s, ARGS: %s' % (sql, args))
+    try:
+        cursor = _db_ctx.connection.curcor()
+        cursor.execute(sql,args)
+        if cursor.description:
+            names=[x[0] for x in cursor.description]
+        if first:
+            values=cursor.fetchone()
+            if not values:
+                return None
+            return Dict(names,values)
+        return [Dict(names,x) for x in cursor.fetchall()]
+    finally:
+        if cursor:
+            cursor.close()
+            
+
+        
