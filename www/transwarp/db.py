@@ -139,9 +139,9 @@ def connection():
 def with_connection(func):
     
     @functools.wraps(func)
-    def _wrapper(*args,**kw):
+    def _wrapper(*args, **kw):
         with _ConnectionCtx():
-            return func(*args,**kw)
+            return func(*args, **kw)
     return _wrapper
         
 class _TransactionCtx(object):
@@ -201,7 +201,7 @@ def with_transaction(func):
 def _select(sql,first,*args):
     global _db_ctx
     cursor = None
-    sql.replace('?','%s')
+    sql = sql.replace('?','%s')
     logging.info('SQL: %s, ARGS: %s' % (sql, args))
     try:
         cursor = _db_ctx.connection.curcor()
@@ -220,7 +220,7 @@ def _select(sql,first,*args):
             
 @with_connection
 def select_one(sql,*args):
-    return _select(sql, True,*args)
+    return _select(sql, True, *args)
 
 @with_connection
 def select_int(sql,*args):

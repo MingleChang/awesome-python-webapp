@@ -67,7 +67,7 @@ class BooleanField(Field):
             kw['default']=False
         if not 'ddl' in kw:
             kw['ddl']='bool'
-        super(StringField,self).__init__(**kw)
+        super(BooleanField,self).__init__(**kw)
         
 class TextField(Field):
     def __init__(self,**kw):
