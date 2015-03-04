@@ -3,7 +3,7 @@
 
 __author__ = 'Mingle Chang'
 
-from models import User, Blog, Comment
+from models import User
 
 from transwarp import db
 

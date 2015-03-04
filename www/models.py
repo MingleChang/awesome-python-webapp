@@ -7,10 +7,10 @@ __author__ = 'Mingle Chang'
 Models for user, blog, comment
 '''
 
-import time,uuid
+import time
 
 from transwarp.db import next_id
-from transwarp.orm import Model,StringField,TextField,BlobField,BooleanField,FloatField,IntegerField
+from transwarp.orm import Model,StringField,TextField,BooleanField,FloatField
 
 class User(Model):
     __table__='users'
